@@ -1,0 +1,111 @@
+@startuml Online Shopping System
+
+' 定义订单状态枚举
+enum OrderStatus {
+  CREATE
+  PAID
+  SHIPPING
+  DELIVERED
+  CANCEL
+}
+
+' 客户类
+class Customer {
+  - name: String
+  - contact: String
+  - deliveryAddress: String
+  - active: boolean
+  + getName(): String
+  + setName(name: String): void
+  + isActive(): boolean
+  + setActive(active: boolean): void
+}
+
+' 订单类
+class Order {
+  - createDate: Date
+  - status: OrderStatus
+  + getCreateDate(): Date
+  + setStatus(status: OrderStatus): void
+  + getStatus(): OrderStatus
+}
+
+' 订单详情类
+class OrderDetail {
+  - quantity: int
+  + calculateSubTotal(): double
+  + calculateWeight(): double
+  + getQuantity(): int
+  + setQuantity(quantity: int): void
+}
+
+' 商品类
+class Product {
+  - title: String
+  - weight: double
+  - description: String
+  + getPriceForQuantity(quantity: int): double
+  + getWeight(): double
+  + getTitle(): String
+}
+
+' 支付方式抽象父类
+abstract class Payment {
+  - amount: double
+  + getAmount(): double
+  + setAmount(amount: double): void
+}
+
+' 支付方式子类
+class Credit {
+  - number: String
+  - type: String
+  - expireDate: Date
+  + getNumber(): String
+  + getExpireDate(): Date
+}
+
+class Cash {
+  - cashTendered: double
+  + getCashTendered(): double
+}
+
+class WireTransfer {
+  - bankID: String
+  - bankName: String
+  + getBankID(): String
+  + getBankName(): String
+}
+
+class AliPay {
+  - number: String
+  + getNumber(): String
+}
+
+class WeixinPay {
+  - number: String
+  + getNumber(): String
+}
+
+' 定义类间关系
+
+' 1. 客户与订单：聚合关系（1对多）
+Customer "1" o-- "*" Order : creates
+
+' 2. 订单与订单详情：组合关系（1对多）
+Order "1" *-- "*" OrderDetail : contains
+
+' 3. 订单详情与商品：关联关系（多对1）
+OrderDetail "*" -- "1" Product : references
+
+' 4. 订单与支付方式：关联关系（1对1）
+Order "1" -- "1" Payment : uses
+
+' 5. 支付方式与子类：继承关系（泛化）
+Payment <|-- Credit
+Payment <|-- Cash
+Payment <|-- WireTransfer
+Payment <|-- AliPay
+Payment <|-- WeixinPay
+
+@enduml

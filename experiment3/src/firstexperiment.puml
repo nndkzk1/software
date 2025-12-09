@@ -1,0 +1,16 @@
+@startuml Thoroughbred Class Diagram
+
+class Thoroughbred {
+  - mother: Thoroughbred
+  - father: Thoroughbred
+  - birthyear: int
+  + getCurrentAge(currentYear: int): int
+  + getFather(): Thoroughbred
+  + getMother(): Thoroughbred
+}
+
+' 自关联
+Thoroughbred "1" -- "mother *" Thoroughbred
+Thoroughbred "1" -- "father *" Thoroughbred
+
+@enduml

@@ -1,0 +1,66 @@
+@startuml School Model
+
+' 定义类和属性
+class School {
+  - name: String
+  - address: String
+  + addDepartment(dept: Department): void
+  + removeDepartment(dept: Department): void
+  + addStudent(student: Student): void
+  + removeStudent(Student: Student) void
+}
+
+class Department {
+  - name: String
+  - code: String
+  + addInstructor(instructor: Instructor): void
+  + removeInstructor(instructor: Instructor): void
+  + addSubject(subject: Subject): void
+  + removeSubject(subject: Subject): void
+}
+
+class Instructor {
+  - name: String
+  - id: String
+  - specialization: String
+  + assignSubject(subject: Subject): void
+  + getAssignedSubjects(): List<Subject>
+}
+
+class Subject {
+  - name: String
+  - code: String
+  - credits: int
+  + getInstructors(): List<Instructor>
+  + getStudents(): List<Student>
+}
+
+class Student {
+  - name: String
+  - id: String
+  - major: String
+  + enrollSubject(subject: Subject): void
+  + getEnrolledSubjects(): List<Subject>
+}
+
+' 定义关系
+
+' 1. School "由...构成" Department (组合关系)
+School "1" *-- "departments 1.." Department : consists of
+
+' 2. Department "拥有" Instructor (聚合关系)
+Department "1" o-- "instructors 1.." Instructor : has
+
+' 3. Department "提供" Subject (聚合关系)
+Department "1" o-- "subjects 1.." Subject : offers
+
+' 4. Instructor "教授" Subject (关联关系)
+Instructor "1" -- "teaches 1..3" Subject : teaches
+
+' 5. School "拥有" Student (聚合关系)
+School "1" o-- "students 0.." Student : has
+
+' 6. Student "参加" Subject (关联关系)
+Student "1" -- "takes 1..5" Subject : enrolls in
+
+@enduml

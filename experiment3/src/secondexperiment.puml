@@ -1,0 +1,35 @@
+@startuml College Model
+
+class College {
+  - name: String
+  - address: String
+  + addBuilding(building: Building): void
+  + removeBuilding(building: Building): void
+  + addCourse(course: Course): void
+  + removeCourse(course: Course): void
+}
+
+class Building {
+  - name: String
+  - address: String
+  - floors: int
+  + getAdress(): String
+}
+
+class Course {
+  - code: String
+  - title: String
+  - credits: int
+  + getCode(): String
+}
+
+' 聚合关系：College "has a" Building (学院有建筑)
+College "1" o-- "*" Building : contains
+
+' 组合关系：College "is composed of" Course (学院由课程组成)
+College "1" *-- "*" Course : consists of
+
+' 约束关系：Course "must be held in" Building (课程必须在建筑中进行)
+Course ..> Building : must be held in { building != null }
+
+@enduml
