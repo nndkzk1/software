@@ -1,0 +1,23 @@
+@startuml ControlPanel状态图
+
+' 布局方向
+left to right direction
+
+' 状态定义：显式定义
+[*] --> IDLE : 系统启动/初始化
+state IDLE : 空闲态（等待户主输入）
+state READING_INPUT : 读取键入字符态（输入密码中）
+state LOCKED : 锁定态（密码错误3次后）
+state FUNCTION_SELECTION : 系统功能选择态（密码验证正确后）
+
+' 状态转换逻辑
+IDLE --> READING_INPUT : 户主按下键盘按键（开始输入）
+READING_INPUT --> READING_INPUT : 输入1-3位字符（未达密码长度4位）
+READING_INPUT --> FUNCTION_SELECTION : 输入4位字符 密码验证正确
+READING_INPUT --> READING_INPUT : 输入4位字符 密码验证错误 错误次数<3次 重置输入缓冲区
+READING_INPUT --> LOCKED : 输入4位字符 密码验证错误 错误次数≥3次
+LOCKED --> IDLE : 锁定时间≥120秒 自动解锁
+FUNCTION_SELECTION --> IDLE : 完成功能选择操作 返回空闲等待状态
+
+
+@enduml

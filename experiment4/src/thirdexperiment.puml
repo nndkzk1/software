@@ -1,0 +1,35 @@
+@startuml 字符串提取状态机
+skinparam state {
+    BackgroundColor #EFEFEF
+    BorderColor #333333
+    FontName "Microsoft YaHei"
+}
+left to right direction
+
+' 初始状态
+[*] --> Initial : 开始扫描字符
+
+' 初始态转换
+state Initial {
+    [*] --> 扫描字符
+    扫描字符 --> InString : 遇到双引号(\")
+    扫描字符 --> 扫描字符 : 其他字符（忽略）
+}
+
+' 字符串内态转换
+state InString {
+    [*] --> 读取字符
+    读取字符 --> Escape : 遇到反斜杠(\\)
+    读取字符 --> Initial : 遇到双引号(\")\n（字符串结束，保存结果）
+    读取字符 --> 读取字符 : 其他字符（加入缓冲区）
+}
+
+' 转义态转换
+state Escape {
+    [*] --> 处理转义字符
+    处理转义字符 --> InString : 任意字符（转义后加入缓冲区）
+}
+
+' 结束状态
+Initial --> [*] : 扫描文件结束
+@enduml
