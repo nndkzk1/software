@@ -1,0 +1,44 @@
+@startuml
+' 1. 定义参与者
+actor "已注册用户" as User #LightBlue
+actor "系统" as System #LightGray
+
+' 2. 定义用例
+usecase "选择医院" as UC1
+usecase "选择科室" as UC2
+usecase "选择预约时间段" as UC3
+usecase "查看可预约医生" as UC4
+usecase "代患者挂号" as UC5
+usecase "提交预约请求" as UC6
+usecase "打印预约单" as UC7
+usecase "校验预约人数" as UC8
+usecase "发送预约成功短信" as UC9
+usecase "提示预约失败" as UC10
+usecase "填写患者身份信息" as UC11
+
+' 3. 参与者与用例的核心关联
+User -- UC1 : 执行
+User -- UC2 : 执行
+User -- UC3 : 执行
+User -- UC4 : 执行
+User -- UC5 : 执行
+User -- UC6 : 执行
+User -- UC7 : 执行
+System -- UC8 : 执行
+System -- UC9 : 执行
+System -- UC10 : 执行
+
+' 4. 用例间的包含/扩展关系（PlantUML标准语法）
+' 包含关系：父用例 --|> 子用例 : includes
+UC6 --|> UC8 : includes
+UC6 --|> UC9 : includes
+UC5 --|> UC11 : includes
+' 扩展关系：子用例 <|-- 父用例 : extends
+UC10 <|-- UC6 : extends
+
+' 5. 备注说明
+note right of UC5 : 适配婴幼儿/老年人代挂号
+note left of UC8 : 单时段≤5位医生
+note bottom of UC10 : 扩展场景：满员/无出诊信息/超5位医生
+
+@enduml
