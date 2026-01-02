@@ -1,0 +1,57 @@
+@startuml
+' 支付挂号费用例 - 纯控制类顺序图
+' 仅定义核心控制类作为参与者
+participant "挂号费金额计算控制类" as P1
+participant "支付宝支付对接控制类" as P2
+participant "缴费状态同步控制类" as P3
+participant "退费处理控制类" as P4
+
+skinparam default {
+  FontName 微软雅黑
+  FontSize 9
+  LineWidth 1
+}
+skinparam participant {
+  BackgroundColor #f0f8ff
+  BorderColor #2f4f4f
+}
+
+' 纯控制类消息传递流程
+activate P1
+' 1. 计算应缴挂号费金额
+P1 -> P1: 查询患者年龄 + 基础挂号费标准
+P1 -> P1: 判断是否≥60岁（免费标识），计算应缴金额
+alt 患者≥60岁（免费支付）
+  P1 -> P3: 传递免费支付信息（患者ID+预约ID+金额0元）
+  activate P3
+  P3 -> P3: 创建0元支付记录 + 生成挂号单
+  P3 -> P3: 更新预约记录缴费状态（已缴费）
+  P3 --> P1: 返回免费缴费同步结果
+  deactivate P3
+else 患者<60岁（需支付宝缴费）
+  ' 2. 对接支付宝支付
+  P1 -> P2: 传递应缴金额 + 预约/患者信息
+  activate P2
+  P2 -> P2: 调用支付宝支付接口，传递支付参数
+  P2 -> P2: 接收支付宝支付回调结果（成功/失败）
+  alt 支付宝支付成功
+    P2 -> P3: 传递支付成功信息（支付单号+金额等）
+    activate P3
+    P3 -> P3: 创建支付宝支付记录
+    P3 -> P3: 更新预约缴费状态 + 生成挂号单
+    P3 --> P2: 返回缴费状态同步结果
+    deactivate P3
+    P2 --> P1: 返回支付宝支付成功结果
+  else 支付宝支付失败
+    P2 --> P1: 返回支付宝支付失败结果
+    ' 支付失败如需退费，调用退费控制类
+    P2 -> P4: 支付异常，请求退费处理
+    activate P4
+    P4 -> P4: 执行退费逻辑，回滚支付状态
+    P4 --> P2: 返回退费处理结果
+    deactivate P4
+  end
+  deactivate P2
+end
+deactivate P1
+@enduml
